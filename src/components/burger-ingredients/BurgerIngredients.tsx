@@ -1,17 +1,9 @@
 import React from "react";
-import {
-    Tab,
-    CurrencyIcon,
-    Counter,
-} from "@ya.praktikum/react-developer-burger-ui-components";
-import { ItemTypes } from "../../types";
+import { Tab } from "@ya.praktikum/react-developer-burger-ui-components";
+import { BurgerIngredientsItem as Item } from "./components/BurgerIngredientsItem";
+import { useAppDispatch, useAppSelector } from "../../services/store";
+import { getIngredients } from "../../services/thunks/ingredientsThunks";
 import styles from "./BurgerIngredients.module.css";
-import Modal from "../modal/Modal";
-import IngredientDetails from "../ingredient-details/IngredientDetails";
-
-type Props = {
-    items: ItemTypes[];
-};
 
 const tabs = {
     bun: "Булки",
@@ -21,41 +13,47 @@ const tabs = {
 
 type TabsKeys = keyof typeof tabs;
 
-function Item(props: ItemTypes) {
-    const { name, price, image, __v: count } = props;
-
-    const [openModal, setOpenModal] = React.useState(false);
-
-    const handleOpenModal = () => setOpenModal(true);
-    const handleCloseModal = () => setOpenModal(false);
-
-    return (
-        <>
-            <li
-                onClick={handleOpenModal}
-                className={`${styles.item} pl-4 pr-4`}
-            >
-                <img src={image} alt={name} />
-                <div className={`${styles.currency} pt-2 pb-2`}>
-                    <span
-                        className={`text text_type_main-default ${styles.price}`}
-                    >
-                        {price}
-                    </span>
-                    <CurrencyIcon type="primary" />
-                </div>
-                <p className="text text_type_main-default">{name}</p>
-                {!!count && <Counter count={count} />}
-            </li>
-            <Modal isOpen={openModal} onClose={handleCloseModal}>
-                <IngredientDetails {...props} />
-            </Modal>
-        </>
-    );
-}
-
-function BurgerIngredients({ items }: Props) {
+function BurgerIngredients() {
     const [active, setActive] = React.useState<TabsKeys>("bun");
+    const { data, isLoading, isError } = useAppSelector(
+        (state) => state.ingredients,
+    );
+
+    const dispatch = useAppDispatch();
+
+    React.useEffect(() => {
+        dispatch(getIngredients());
+    }, [dispatch]);
+
+    const handleScroll = (event: React.UIEvent<HTMLElement>) => {
+        const containerTop = event.currentTarget.getBoundingClientRect().top;
+        const containerScroll = event.currentTarget.scrollTop;
+
+        let closestKey: string | null = null;
+        let distance = Infinity;
+
+        Object.keys(tabs).forEach((key) => {
+            const element = document.getElementById(key);
+
+            if (element) {
+                const elementTop =
+                    element.getBoundingClientRect().top -
+                    containerTop +
+                    containerScroll;
+
+                const distanceToTop = Math.abs(elementTop - containerScroll);
+
+                if (distanceToTop < distance) {
+                    distance = distanceToTop;
+                    closestKey = key;
+                }
+            }
+        });
+
+        if (closestKey !== null) {
+            setActive(closestKey);
+        }
+    };
 
     return (
         <main className={styles.main}>
@@ -75,25 +73,33 @@ function BurgerIngredients({ items }: Props) {
                     </a>
                 ))}
             </div>
-            <section className={`${styles.wrapper}`}>
-                {Object.keys(tabs).map((key) => (
-                    <React.Fragment key={key}>
-                        <h2
-                            className="text text_type_main-medium pt-10 pb-6"
-                            id={key}
-                        >
-                            {tabs[key as TabsKeys]}
-                        </h2>
-                        <ul className={`${styles.content} pl-4 pr-4`}>
-                            {items
-                                .filter((item) => item.type === key)
-                                .map((item) => (
-                                    <Item key={item._id} {...item} />
-                                ))}
-                        </ul>
-                    </React.Fragment>
-                ))}
-            </section>
+            {isLoading ? (
+                "Загрузка..."
+            ) : isError ? (
+                "Ошибка получения данных"
+            ) : (
+                <section
+                    className={`${styles.wrapper}`}
+                    onScroll={handleScroll}
+                >
+                    {Object.keys(tabs).map((key) => (
+                        <React.Fragment key={key}>
+                            <div id={key}>
+                                <h2 className="text text_type_main-medium pt-10 pb-6">
+                                    {tabs[key as TabsKeys]}
+                                </h2>
+                                <ul className={`${styles.content} pl-4 pr-4`}>
+                                    {data
+                                        .filter((item) => item.type === key)
+                                        .map((item) => (
+                                            <Item key={item._id} {...item} />
+                                        ))}
+                                </ul>
+                            </div>
+                        </React.Fragment>
+                    ))}
+                </section>
+            )}
         </main>
     );
 }
