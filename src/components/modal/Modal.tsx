@@ -12,23 +12,20 @@ type Props = {
 
 function Modal({ children, isOpen, onClose }: Props) {
     React.useEffect(() => {
-        isOpen
-            ? (document.body.style.overflow = "hidden")
-            : (document.body.style.overflow = "");
+        function handleKeyDown(event: KeyboardEvent) {
+            if (event.key === "Escape") onClose();
+        }
 
-        document.addEventListener("keydown", (event) => handleKeyDown(event));
+        if (isOpen) {
+            document.body.style.overflow = "hidden";
+            document.addEventListener("keydown", handleKeyDown);
 
-        return () => {
-            document.body.style.overflow = "";
-            document.removeEventListener("keydown", (event) =>
-                handleKeyDown(event),
-            );
-        };
+            return () => {
+                document.body.style.overflow = "";
+                document.removeEventListener("keydown", handleKeyDown);
+            };
+        }
     }, [isOpen]);
-
-    function handleKeyDown(event: KeyboardEvent) {
-        if (event.key === "Escape") onClose();
-    }
 
     if (!isOpen) return null;
 
