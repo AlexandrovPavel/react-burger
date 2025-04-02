@@ -16,9 +16,21 @@ const cartSlice = createSlice({
         addItem: (state, action: PayloadAction<ItemTypeWithId>) => {
             if (action.payload.type === "bun") {
                 state.data = state.data.filter((item) => item.type !== "bun");
+
+                state.data = [action.payload, ...state.data, action.payload];
+
+                return;
             }
 
-            state.data.push(action.payload);
+            if (state.data.length) {
+                state.data = [
+                    state.data[0],
+                    action.payload,
+                    ...state.data.slice(1),
+                ];
+            } else {
+                state.data = [action.payload];
+            }
         },
         removeItem: (state, action: PayloadAction<string>) => {
             state.data = state.data.filter(
