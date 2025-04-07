@@ -85,8 +85,12 @@ function App() {
                     />
                     <Route
                         path="/profile/orders/:id"
-                        element={<OrderModal isOpen={!!background} />}
-                    />
+                        element={
+                            <ProtectedRoute
+                                element={<OrderModal isOpen={!!background} />}
+                            />
+                        }
+                    ></Route>
                 </Routes>
             )}
         </React.Fragment>

@@ -4,7 +4,6 @@ import { Outlet } from "react-router";
 import { useNavigate, useLocation } from "react-router";
 import { useAppDispatch } from "../../services/store";
 import { logout } from "../../services/thunks/authThunks";
-import { connect, disconnect } from "../../services/slices/authSlice";
 import styles from "./ProfileLayout.module.css";
 
 type Props = {
@@ -36,14 +35,6 @@ export default function ProfileLayout({ hasMenu = true }: Props) {
             }
         });
     };
-
-    React.useEffect(() => {
-        dispatch(connect("wss://norma.nomoreparties.space/orders"));
-
-        return () => {
-            dispatch(disconnect());
-        };
-    }, []);
 
     return (
         <div className={styles.container}>

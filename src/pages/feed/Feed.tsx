@@ -3,9 +3,21 @@ import { ListOrdersItem } from "../../components/list-orders/components/list-ord
 import ProgressOrders from "../../components/progress-orders/ProgressOrders";
 import { useAppSelector } from "../../services/store";
 import { ClipLoader } from "react-spinners";
+import { useAppDispatch } from "../../services/store";
+import { connect, disconnect } from "../../services/slices/orderSlice";
+import React from "react";
 
 export default function Feed() {
     const { data, status } = useAppSelector((state) => state.order);
+    const dispatch = useAppDispatch();
+
+    React.useEffect(() => {
+        dispatch(connect("wss://norma.nomoreparties.space/orders/all"));
+
+        return () => {
+            dispatch(disconnect());
+        };
+    }, []);
 
     if (status === "error") {
         return <div>Ошибка при загрузке заказов</div>;
