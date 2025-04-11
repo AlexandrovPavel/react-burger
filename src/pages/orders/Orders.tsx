@@ -3,7 +3,8 @@ import { ListOrdersItem } from "../../components/list-orders/components/list-ord
 import { useAppSelector } from "../../services/store";
 import { ClipLoader } from "react-spinners";
 import React from "react";
-import { connect, disconnect } from "../../services/slices/authSlice";
+// import { connect, disconnect } from "../../services/slices/authSlice";
+import { connect, disconnect } from "../../services/slices/auth/authSlice";
 import { useAppDispatch } from "../../services/store";
 
 export default function Orders() {
