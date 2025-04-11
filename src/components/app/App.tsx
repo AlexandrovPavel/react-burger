@@ -1,10 +1,5 @@
 import React from "react";
-import {
-    BrowserRouter as Router,
-    Routes,
-    Route,
-    useLocation,
-} from "react-router";
+import { Routes, Route, useLocation } from "react-router";
 import BaseLayout from "../../layouts/base-layout/BaseLayout";
 import AuthLayout from "../../layouts/auth-layout/AuthLayout";
 import ProfileLayout from "../../layouts/profile-layout/ProfileLayout";
@@ -85,12 +80,8 @@ function App() {
                     />
                     <Route
                         path="/profile/orders/:id"
-                        element={
-                            <ProtectedRoute
-                                element={<OrderModal isOpen={!!background} />}
-                            />
-                        }
-                    ></Route>
+                        element={<OrderModal isOpen={!!background} />}
+                    />
                 </Routes>
             )}
         </React.Fragment>

@@ -2,7 +2,7 @@ import React from "react";
 import IngredientList from "../../components/ingredient-details/components/IngredientList";
 import { ClipLoader } from "react-spinners";
 import { Link, Navigate, useParams } from "react-router";
-import { addProduct } from "../../services/slices/viewSlice";
+import { addProduct } from "../../services/slices/view/viewSlice";
 import { getIngredients } from "../../services/thunks/ingredientsThunks";
 import { useAppDispatch, useAppSelector } from "../../services/store";
 import styles from "./Ingredient.module.css";
